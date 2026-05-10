@@ -6,6 +6,7 @@ Laravel 12 API em PHP 8.4 com PostgreSQL, Sanctum e camadas explícitas (Control
 
 - **API (Back):** [https://health-dashboard-tecsagroup-back.onrender.com](https://health-dashboard-tecsagroup-back.onrender.com) — healthcheck JSON na raiz (`/`). Rotas da aplicação usam o prefixo **`/api`** (ex.: `GET /api/health`, `POST /api/login`).
 - **Web App (Front):** [https://health-dashboard-tecsagroup-front.onrender.com](https://health-dashboard-tecsagroup-front.onrender.com)
+- **Demo em vídeo (Loom):** [https://www.loom.com/share/376a7a7c76a844d284091b2ad006323a](https://www.loom.com/share/376a7a7c76a844d284091b2ad006323a)
 
 ## Stack
 
