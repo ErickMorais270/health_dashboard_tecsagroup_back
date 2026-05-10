@@ -37,6 +37,23 @@ O fluxo em `tests/Feature/HealthDashboardFlowTest.php` usa `Http::fake()` para s
 
 Rotas `api/*` retornam JSON padronizado (`success`, `message`, `errors`) via `App\Http\Support\ApiExceptionRenderer` (ex.: `AiProviderException` onde ainda for lançada).
 
+## CORS (front web no Render)
+
+O navegador só envia `POST`/`GET` para a API se a origem do front estiver autorizada. Configuração em **`config/cors.php`**, variável **`CORS_ALLOWED_ORIGINS`** (lista separada por vírgula, **host completo com `https://`**, não apenas `onrender.com`).
+
+**Exemplo (produção):**
+
+```env
+CORS_ALLOWED_ORIGINS=https://health-dashboard-tecsagroup-front.onrender.com
+```
+
+Para desenvolvimento local (Expo web em outra porta), acrescente `http://localhost:8081`, `http://127.0.0.1:8081`, etc.  
+Valor `*` aceita qualquer origem (evite em produção).
+
+Após alterar `.env` / variáveis no Render, rode `php artisan config:cache` (o Dockerfile de deploy já faz isso no start).
+
+**Como diagnosticar no Chrome:** F12 → **Network** → tentar cadastro. Erro **CORS** na coluna (ou no console) indica origem bloqueada; **404** costuma ser URL da API incorreta no front; **failed / connection** com base `127.0.0.1` indica bundle sem `EXPO_PUBLIC_API_URL` no build.
+
 ## Deploy (Docker / Render)
 
 - **Dockerfile:** na raiz deste projeto (`health_dashboard_tecsagroup_back/`). Build local: `docker build -t health-api .`
@@ -48,7 +65,7 @@ Rotas `api/*` retornam JSON padronizado (`success`, `message`, `errors`) via `Ap
     - `DATABASE_URL` = URL interna do Postgres (`postgresql://...`), **ou** defina manualmente `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` com o hostname real (ex.: `dpg-xxxx.oregon-postgres.render.com`), **nunca** `127.0.0.1`/`localhost`.
   - Este projeto aceita **`DATABASE_URL`** na config `pgsql` (além de `DB_URL`), alinhado ao que o Render expõe ao vincular o banco.
   - Para conexões **externas** ao Postgres Render, pode ser necessário `DB_SSLMODE=require` (vide documentação Render).
-- **Outras variáveis:** `APP_KEY` (`php artisan key:generate --show`), `APP_ENV=production`, `APP_DEBUG=false`, `GEMINI_*` se quiser IA real. O container roda `php artisan migrate --force` ao subir (*após* `config:cache`; use sempre as vars corretas no painel).
+- **Outras variáveis:** `APP_KEY` (`php artisan key:generate --show`), `APP_ENV=production`, `APP_DEBUG=false`, **`CORS_ALLOWED_ORIGINS=https://health-dashboard-tecsagroup-front.onrender.com`**, `GEMINI_*` se quiser IA real. O container roda `php artisan migrate --force` ao subir (*após* `config:cache`; use sempre as vars corretas no painel).
 - **`.dockerignore`:** reduz o contexto de build (não envia `vendor/` local nem `.env`).
 
 ## Relatório de IA
