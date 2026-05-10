@@ -35,8 +35,15 @@ Rotas `api/*` retornam JSON padronizado (`success`, `message`, `errors`) via `Ap
 ## Deploy (Docker / Render)
 
 - **Dockerfile:** na raiz deste projeto (`health_dashboard_tecsagroup_back/`). Build local: `docker build -t health-api .`
-- **Render:** ao usar um monorepo, defina **Root Directory** para esta pasta e informe o Dockerfile acima. **Port** `80` (ou mapeie a porta HTTP que o Render espera).
-- **Variáveis de ambiente:** no painel do Render, configure pelo menos `APP_KEY` (gere com `php artisan key:generate --show` localmente), `APP_ENV=production`, `APP_DEBUG=false`, credenciais PostgreSQL (`DB_*` ou `DATABASE_URL`), `GEMINI_*` se quiser IA real, e `SESSION_DOMAIN`/URLs se necessário. O container executa `migrate --force` ao iniciar.
+- **Render:** ao usar um monorepo, defina **Root Directory** para esta pasta e informe o Dockerfile acima. **Port** `80`.
+- **PostgreSQL (erro “connection to 127.0.0.1:5432 refused”):** dentro do Docker **não** existe Postgres em `localhost`. Você precisa das credenciais do **PostgreSQL gerenciado pelo Render**:
+  - Crie um **PostgreSQL** no Render e **conecte** ao mesmo *team/workspace* que o Web Service **ou** copie a **Internal Database URL**.
+  - No **Web Service** → **Environment**, defina obrigatoriamente:
+    - `DB_CONNECTION=pgsql`
+    - `DATABASE_URL` = URL interna do Postgres (`postgresql://...`), **ou** defina manualmente `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` com o hostname real (ex.: `dpg-xxxx.oregon-postgres.render.com`), **nunca** `127.0.0.1`/`localhost`.
+  - Este projeto aceita **`DATABASE_URL`** na config `pgsql` (além de `DB_URL`), alinhado ao que o Render expõe ao vincular o banco.
+  - Para conexões **externas** ao Postgres Render, pode ser necessário `DB_SSLMODE=require` (vide documentação Render).
+- **Outras variáveis:** `APP_KEY` (`php artisan key:generate --show`), `APP_ENV=production`, `APP_DEBUG=false`, `GEMINI_*` se quiser IA real. O container roda `php artisan migrate --force` ao subir (*após* `config:cache`; use sempre as vars corretas no painel).
 - **`.dockerignore`:** reduz o contexto de build (não envia `vendor/` local nem `.env`).
 
 ## Relatório de IA
