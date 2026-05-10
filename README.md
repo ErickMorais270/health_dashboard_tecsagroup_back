@@ -2,6 +2,11 @@
 
 Laravel 12 API em PHP 8.4 com PostgreSQL, Sanctum e camadas explícitas (Controller → FormRequest → Service → Repository → Model). A integração com LLM fica isolada em `GenerateHealthRecommendationsAction`, com prompt de sistema orientado a um coach de saúde responsável.
 
+## Links (produção — Render)
+
+- **API (Back):** [https://health-dashboard-tecsagroup-back.onrender.com](https://health-dashboard-tecsagroup-back.onrender.com) — healthcheck JSON na raiz (`/`). Rotas da aplicação usam o prefixo **`/api`** (ex.: `GET /api/health`, `POST /api/login`).
+- **Web App (Front):** [https://health-dashboard-tecsagroup-front.onrender.com](https://health-dashboard-tecsagroup-front.onrender.com)
+
 ## Stack
 
 - PHP 8.4+, Laravel 12, PostgreSQL (SQLite em testes automatizados)
